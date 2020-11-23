@@ -3,7 +3,7 @@ from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten
 from tensorflow.keras.models import Sequential
 import numpy as np
-from TransferLeanringModel import TransferLearningModel
+from TransferLearnringModel import TransferLearningModel
 
 # Model / data parameters
 num_classes = 10
