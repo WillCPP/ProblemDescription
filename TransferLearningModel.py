@@ -11,10 +11,6 @@ class TransferLearningModel:
         self.model = keras.models.load_model(path)
 
     def fineTune(self, x_train, y_train, num_layers):
-        # weights_list = []
-        # for layer in self.model.layers:
-        #     weights_list.append(layer.get_weights())
-
         for i in range(len(self.model.layers) - num_layers):
             self.model.layers[i].trainable = False
         
@@ -27,9 +23,3 @@ class TransferLearningModel:
         weights_list_after = []
         for layer in self.model.layers:
             weights_list_after.append(layer.get_weights())
-
-        # for i in range(len(weights_list)):
-        #     print(f'Layer {i}')
-        #     for wi, wj in zip(weights_list[i], weights_list_after[i]):
-        #         print(f'i: {wi}')
-        #         print(f'j: {wj}')
