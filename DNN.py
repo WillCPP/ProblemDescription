@@ -13,7 +13,6 @@ class DNN():
         self.params = params
         self.use_tf_privacy = use_tf_privacy
         self.noise_multiplier = noise_multiplier
-        self.layers = None
 
     def createModel(self):
         layers = [
@@ -28,7 +27,6 @@ class DNN():
             Dropout(0.5),
             Dense(self.num_classes, activation="softmax"),
         ]
-        
         model = Sequential(layers)
         model.summary()
 
@@ -39,34 +37,19 @@ class DNN():
 
         model.compile(optimizer=keras.optimizers.Adam(), loss=loss, metrics=[keras.metrics.CategoricalAccuracy()])
         self.model = model
-        self.layers = layers
 
     def train(self, x_train, y_train, x_test, y_test):
-        if self.use_tf_privacy:
-            model = DPSequential(l2_norm_clip=self.params['l2_norm_clip'], 
-                noise_multiplier=self.noise_multiplier,
-                layers=self.layers)
-            model.compile(optimizer=keras.optimizers.Adam(self.params['learning_rate']),
-                loss=keras.losses.CategoricalCrossentropy(),
-                metrics=[keras.metrics.CategoricalAccuracy()])
-            self.model = model
-            self.model.fit(x_train, y_train, batch_size=self.params['batch_size'], epochs=self.params['epochs'], validation_split=self.params['validation_split'])
-            return
-        # else:
-        #     model = Sequential(self.layers)
-
         if self.model is None:
             print('Model has not been created yet, run createModel() first.')
             return
         else:
             optimizer = None
             if self.use_tf_privacy:
-                # optimizer = DPKerasAdamOptimizer(
-                # l2_norm_clip=self.params['l2_norm_clip'], 
-                # noise_multiplier=self.noise_multiplier,
-                # learning_rate=self.params['learning_rate'],
-                # num_microbatches=self.params['num_microbatches'])
-                optimizer=keras.optimizers.Adam(0.001)
+                optimizer = DPKerasAdamOptimizer(
+                l2_norm_clip=self.params['l2_norm_clip'],
+                noise_multiplier=self.noise_multiplier,
+                learning_rate=self.params['learning_rate'],
+                num_microbatches=self.params['num_microbatches'])
             else:
                 optimizer=keras.optimizers.Adam(0.001)
 
