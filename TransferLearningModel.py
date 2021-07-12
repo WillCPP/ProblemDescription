@@ -1,3 +1,4 @@
+from DNN import DNN
 from tensorflow import keras
 from tensorflow_privacy.privacy.optimizers.dp_optimizer_keras import DPKerasAdamOptimizer
 
@@ -15,14 +16,19 @@ class TransferLearningModel:
         if not self.use_tf_privacy:
             self.model = keras.models.load_model(path)
         if self.use_tf_privacy:
-            optimizer = DPKerasAdamOptimizer(
-                l2_norm_clip=self.params['l2_norm_clip'], 
-                noise_multiplier=self.noise_multiplier,
-                learning_rate=self.params['learning_rate'])
-            self.model = keras.models.load_model(path, compile=False)  #, custom_objects={'DPOptimizerClass': optimizer})
-            self.model.compile(optimizer=optimizer,
-                loss=keras.losses.CategoricalCrossentropy(),
-                metrics=[keras.metrics.CategoricalAccuracy()])
+            # optimizer = DPKerasAdamOptimizer(
+            #     l2_norm_clip=self.params['l2_norm_clip'], 
+            #     noise_multiplier=self.noise_multiplier,
+            #     learning_rate=self.params['learning_rate'])
+            # self.model = keras.models.load_model(path, compile=False)  #, custom_objects={'DPOptimizerClass': optimizer})
+            # self.model.compile(optimizer=optimizer,
+            #     loss=keras.losses.CategoricalCrossentropy(),
+            #     metrics=[keras.metrics.CategoricalAccuracy()])
+            # ==================================================
+            dnn = DNN()
+            dnn.createModel()
+            dnn.model.set_weights(keras.models.load_model(path).get_weights())
+            self.model = dnn.model
 
     def fineTune(self, x_train, y_train):
         for i in range(len(self.model.layers) - self.params['num_layers']):
@@ -33,7 +39,8 @@ class TransferLearningModel:
             optimizer = DPKerasAdamOptimizer(
             l2_norm_clip=self.params['l2_norm_clip'], 
             noise_multiplier=self.noise_multiplier,
-            learning_rate=self.params['learning_rate'])
+            learning_rate=self.params['learning_rate'],
+            num_microbatches=self.params['num_microbatches'])
         else:
             optimizer=keras.optimizers.Adam(0.001)
         
