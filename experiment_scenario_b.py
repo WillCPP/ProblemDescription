@@ -25,7 +25,7 @@ print('==================================================')
 
 # Loop and perform Transfer Learning with increasing noise values
 # Starting at 0.1, increasing by 0.1, until we reach the value specified in paramaters.py
-for _, n in enumerate([x/10 for x in range(1, int(parameters['base_model']['noise_multiplier']*10)+1)]):
+for _, n in enumerate([x/100 for x in range(1, int(parameters['base_model']['noise_multiplier']*10)+1)]):
     print('==================================================')
     print(f'Noise Multiplier: {n}')
     print('==================================================')

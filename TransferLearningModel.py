@@ -33,6 +33,12 @@ class TransferLearningModel:
     def fineTune(self, x_train, y_train):
         for i in range(len(self.model.layers) - self.params['num_layers']):
             self.model.layers[i].trainable = False
+
+        self.model.compile(optimizer=self.model.optimizer, loss=self.model.loss, metrics=[keras.metrics.CategoricalAccuracy()]) # TODO: This line is probably needed
+
+        for i in range(len(self.model.layers)):
+            print(f'Layer: {i} | Trainable: {self.model.layers[i].trainable}')
+        self.model.summary()
         
         optimizer = None
         if self.use_tf_privacy:

@@ -54,7 +54,7 @@ class DNN():
                 optimizer=keras.optimizers.Adam(0.001)
 
             self.model.compile(optimizer=optimizer,
-                loss=keras.losses.CategoricalCrossentropy(),
+                loss=keras.losses.CategoricalCrossentropy(from_logits=True), # TODO: Check if from_logits=True is needed here
                 metrics=[keras.metrics.CategoricalAccuracy()])
 
             self.model.fit(x_train, y_train, batch_size=self.params['batch_size'], epochs=self.params['epochs'], validation_split=self.params['validation_split'])
