@@ -48,7 +48,8 @@ class TransferLearningModel:
             learning_rate=self.params['learning_rate'],
             num_microbatches=self.params['num_microbatches'])
         else:
-            optimizer=keras.optimizers.Adam(0.001)
+            # optimizer=keras.optimizers.Adam(0.001)
+            optimizer=keras.optimizers.Adam(self.params['learning_rate'])
         
         self.model.compile(optimizer=optimizer,
             loss=keras.losses.CategoricalCrossentropy(),

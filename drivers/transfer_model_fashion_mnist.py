@@ -1,5 +1,6 @@
 from tensorflow import keras
 import tensorflow_datasets as tfds
+from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten
 from tensorflow.keras.models import Sequential
 from tensorflow_privacy.privacy.optimizers.dp_optimizer_keras import DPKerasAdamOptimizer
@@ -8,19 +9,21 @@ from TransferLearningModel import TransferLearningModel
 from DatasetSampler import DatasetSampler
 from parameters_sb import parameters
 
-def transfer_model_emnist(model, model_folder, use_tf_privacy=False, noise_multiplier=None):
+def transfer_model_fashion_mnist(model, model_folder, use_tf_privacy=False, noise_multiplier=None):
     # Model / data parameters
     num_classes = 10
 
     # Load transfer training dataset
-    x_train = np.load('data/transfer_training_dataset/x_train.npy')
-    y_train = np.load('data/transfer_training_dataset/y_train.npy')
-    x_test = np.load('data/transfer_training_dataset/x_test.npy')
-    y_test = np.load('data/transfer_training_dataset/y_test.npy')
+    # x_train = np.load('data/transfer_training_dataset/x_train.npy')
+    # y_train = np.load('data/transfer_training_dataset/y_train.npy')
+    # x_test = np.load('data/transfer_training_dataset/x_test.npy')
+    # y_test = np.load('data/transfer_training_dataset/y_test.npy')
+
+    (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
     # Sampling for 20 instances per class
     ds = DatasetSampler()
-    x_train, y_train = ds.sample(x_train, y_train, 200)
+    x_train, y_train = ds.sample(x_train, y_train, 1000)
     x_test, y_test= ds.sample(x_test, y_test, 200)
 
     # Scale images to the [0, 1] range
