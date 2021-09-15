@@ -1,5 +1,6 @@
 from tensorflow import keras
 from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten
 from tensorflow.keras.models import Sequential
 import numpy as np
@@ -12,7 +13,8 @@ def base_model_sb(save_model=False, model_folder=None, use_tf_privacy=False, noi
     num_classes = 10
     input_shape = (28, 28, 1,)
     # the data, split between train and test sets
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    # (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
     
     # Scale images to the [0, 1] range
     x_train = np.array(x_train, dtype=np.float32) / 255  # x_train.astype("float32") / 255

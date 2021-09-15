@@ -2,8 +2,11 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Dropout, Flatten, MaxPool2D
 from tensorflow.keras.models import Sequential
+from tensorflow.python.keras.layers.core import Activation
+from tensorflow.python.keras.layers.normalization_v2 import BatchNormalization
 from tensorflow_privacy.privacy.keras_models.dp_keras_model import DPSequential
 from tensorflow_privacy.privacy.optimizers.dp_optimizer_keras import DPKerasAdamOptimizer
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 class DNN():
     def __init__(self, input_shape, num_classes, params, use_tf_privacy=False, noise_multiplier=None):
@@ -15,15 +18,29 @@ class DNN():
         self.noise_multiplier = noise_multiplier
 
     def createModel(self):
+        # layers = [
+        #     keras.Input(shape=self.input_shape),
+        #     Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        #     MaxPooling2D(pool_size=(2, 2)),
+        #     Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        #     MaxPooling2D(pool_size=(2, 2)),
+        #     Conv2D(128, kernel_size=(3, 3), activation="relu"),
+        #     MaxPooling2D(pool_size=(2, 2)),
+        #     Flatten(),
+        #     Dropout(0.5),
+        #     Dense(self.num_classes, activation="softmax"),
+        # ]
         layers = [
             keras.Input(shape=self.input_shape),
-            Conv2D(32, kernel_size=(3, 3), activation="relu"),
+            Conv2D(32, kernel_size=(3, 3), activation="relu", padding="same"),
+            Conv2D(32, kernel_size=(3, 3), activation="relu", padding="same"),
             MaxPooling2D(pool_size=(2, 2)),
-            Conv2D(64, kernel_size=(3, 3), activation="relu"),
-            MaxPooling2D(pool_size=(2, 2)),
-            Conv2D(128, kernel_size=(3, 3), activation="relu"),
+            Conv2D(64, kernel_size=(3, 3), activation="relu", padding="same"),
+            Conv2D(64, kernel_size=(3, 3), activation="relu", padding="same"),
             MaxPooling2D(pool_size=(2, 2)),
             Flatten(),
+            Dense(256),
+            Activation("relu"),
             Dropout(0.5),
             Dense(self.num_classes, activation="softmax"),
         ]
@@ -58,7 +75,21 @@ class DNN():
                 loss=keras.losses.CategoricalCrossentropy(from_logits=True), # TODO: Check if from_logits=True is needed here
                 metrics=[keras.metrics.CategoricalAccuracy()])
 
-            self.model.fit(x_train, y_train, batch_size=self.params['batch_size'], epochs=self.params['epochs'], validation_split=self.params['validation_split'])
+            # self.model.fit(x_train, y_train, batch_size=self.params['batch_size'], epochs=self.params['epochs'], validation_split=self.params['validation_split'])
+
+            datagen = ImageDataGenerator(
+                featurewise_center=False,  # set input mean to 0 over the dataset
+                samplewise_center=False,  # set each sample mean to 0
+                featurewise_std_normalization=False,  # divide inputs by std of the dataset
+                samplewise_std_normalization=False,  # divide each input by its std
+                zca_whitening=False,  # dimesion reduction
+                rotation_range=0.1,  # randomly rotate images in the range
+                zoom_range = 0.1, # Randomly zoom image
+                width_shift_range=0.1,  # randomly shift images horizontally
+                height_shift_range=0.1,  # randomly shift images vertically
+                horizontal_flip=False,  # randomly flip images
+                vertical_flip=False)  # randomly flip images
+            self.model.fit(datagen.flow(x_train, y_train), batch_size=self.params['batch_size'], epochs=self.params['epochs'])
     
     def saveModel(self, path):
         self.model.save(path)

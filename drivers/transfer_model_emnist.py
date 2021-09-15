@@ -20,8 +20,8 @@ def transfer_model_emnist(model, model_folder, use_tf_privacy=False, noise_multi
 
     # Sampling for 20 instances per class
     ds = DatasetSampler()
-    x_train, y_train = ds.sample(x_train, y_train, 200)
-    x_test, y_test= ds.sample(x_test, y_test, 200)
+    x_train, y_train = ds.sample(x_train, y_train, 30)
+    x_test, y_test= ds.sample(x_test, y_test, 30)
 
     # Scale images to the [0, 1] range
     x_train = np.array(x_train, dtype=np.float32) / 255  # x_train.astype("float32") / 255

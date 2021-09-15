@@ -11,8 +11,8 @@ print('==================================================')
 # Diferrential Privacy is NOT used at this step
 model = base_model_sb(save_model=True, model_folder='models/experiment_scenario_b')
 # Perform Transfer Learning to establish baseline performance on plaintext
-# transfer_model_emnist(model, model_folder='models/experiment_scenario_b')
-transfer_model_fashion_mnist(model, model_folder='models/experiment_scenario_b')
+transfer_model_emnist(model, model_folder='models/experiment_scenario_b')
+# transfer_model_fashion_mnist(model, model_folder='models/experiment_scenario_b')
 
 # # | Single step transfer learning with dp
 # print('==================================================')
